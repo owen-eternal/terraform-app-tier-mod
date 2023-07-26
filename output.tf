@@ -10,3 +10,7 @@ output "subnets" {
 output "tagName" {
   value = module.tf-aws-network.tag_name
 }
+
+output "launch_template_id" {
+  value = aws_launch_template.launch-blueprint.id
+}
