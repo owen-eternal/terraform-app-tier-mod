@@ -31,14 +31,14 @@ resource "aws_launch_template" "launch-blueprint" {
   }
 }
 
-resource "aws_autoscaling_group" "app-asg" {
-  min_size           = 2
-  max_size           = 4
-  desired_capacity   = 2
-  vpc_zone_identifier  = module.tf-aws-network.web_subnet_ids
+resource "aws_autoscaling_group" "web-asg" {
+  min_size            = 2
+  max_size            = 4
+  desired_capacity    = 2
+  vpc_zone_identifier = module.tf-aws-network.web_subnet_ids
 
   launch_template {
-    id = aws_launch_template.launch-blueprint.id
+    id      = aws_launch_template.launch-blueprint.id
     version = "$Default"
   }
 }
