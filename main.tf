@@ -41,6 +41,10 @@ resource "aws_autoscaling_group" "web-asg" {
     id      = aws_launch_template.launch-blueprint.id
     version = "$Default"
   }
+
+  lifecycle {
+    ignore_changes = [max_size, target_group_arns]
+  }
 }
 
 resource "aws_lb" "web-lb" {
