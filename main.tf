@@ -8,8 +8,10 @@ module "tf-aws-network" {
   project_name    = var.project_name
   environment     = terraform.workspace
   web_server_port = var.web_server_port
+  database        = var.database
   db_server_port  = var.db_server_port
   subnet_cdir     = var.subnet_cdir
+  ipaddr          = var.ipaddr
 }
 
 ################################################
@@ -34,7 +36,7 @@ resource "aws_autoscaling_group" "app-asg" {
   max_size           = 4
   desired_capacity   = 2
   vpc_zone_identifier  = module.tf-aws-network.web_subnet_ids
-  
+
   launch_template {
     id = aws_launch_template.launch-blueprint.id
     version = "$Default"
