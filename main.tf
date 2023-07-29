@@ -42,3 +42,11 @@ resource "aws_autoscaling_group" "web-asg" {
     version = "$Default"
   }
 }
+
+resource "aws_lb" "web-lb" {
+  name               = "${module.tf-aws-network.tag_name}-lb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [module.tf-aws-network.lb_security_group_id]
+  subnets            = module.tf-aws-network.web_subnet_ids
+}
