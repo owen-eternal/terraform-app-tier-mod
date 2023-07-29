@@ -54,3 +54,14 @@ resource "aws_lb" "web-lb" {
   security_groups    = [module.tf-aws-network.lb_security_group_id]
   subnets            = module.tf-aws-network.web_subnet_ids
 }
+
+resource "aws_lb_listener" "terramino" {
+  load_balancer_arn = aws_lb.web-lb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.web-tg.arn
+  }
+}
