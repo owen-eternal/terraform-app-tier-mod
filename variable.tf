@@ -7,4 +7,4 @@ variable "lb_security_group" {}
 variable "web_port" {}
 variable "web_security_group" {}
 variable "web_subnets" {}
-variable "vpc_cidr" {}
+variable "vpc_id" {}
