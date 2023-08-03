@@ -1,15 +1,10 @@
-####### VPC-Tier Module Variables ########
-variable "vpc_cdir" {}
-variable "project_name" {}
-variable "environment" {}
-variable "subnet_cdir" {}
-variable "web_server_port" {}
-variable "database" {}
-variable "db_server_port" {}
-variable "ipaddr" {}
-
-####### APP-Tier Module Variables ########
+######### Variables ###########
 variable "app_ami" {}
 variable "app_instance_type" {}
-variable "user_data" {}
 variable "ssh_key_pair" {}
+variable "prefix" {}
+variable "lb_security_group" {}
+variable "web_port" {}
+variable "web_security_group" {}
+variable "web_subnets" {}
+variable "vpc_cidr" {}
