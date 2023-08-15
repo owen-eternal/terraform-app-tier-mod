@@ -14,8 +14,13 @@ resource "aws_launch_template" "capacity-temp" {
   image_id               = var.app_ami
   instance_type          = var.app_instance_type
   key_name               = var.ssh_key_pair
+  user_data              = base64encode(data.template_file.user_data.rendered)
   name_prefix            = "${var.prefix}-asg"
   vpc_security_group_ids = [var.web_security_group]
+
+  iam_instance_profile {
+    arn = var.iam_instance_profile_arn
+  }
 
   lifecycle {
     create_before_destroy = true
