@@ -10,7 +10,7 @@ locals {
 ############### Resources ######################
 ################################################
 
-resource "aws_launch_template" "launch-blueprint" {
+resource "aws_launch_template" "capacity-temp" {
   image_id               = var.app_ami
   instance_type          = var.app_instance_type
   key_name               = var.ssh_key_pair
@@ -23,18 +23,27 @@ resource "aws_launch_template" "launch-blueprint" {
 }
 
 resource "aws_autoscaling_group" "web-asg" {
-  min_size            = 2
-  max_size            = 4
-  desired_capacity    = 2
+  name                  = "${var.prefix}-WEB_ASG"
+  min_size            = 0
+  max_size            = 2
+  desired_capacity    = 0
+  health_check_type     = "ALB"
+  protect_from_scale_in = true
   vpc_zone_identifier = var.web_subnets
 
   launch_template {
-    id      = aws_launch_template.launch-blueprint.id
+    id      = aws_launch_template.capacity-temp.id
     version = "$Default"
   }
 
   lifecycle {
-    ignore_changes = [max_size, target_group_arns]
+    ignore_changes = [desired_capacity]
+  }
+
+  tag {
+    key                 = "AmazonECSManaged"
+    value               = true
+    propagate_at_launch = true
   }
 }
 
