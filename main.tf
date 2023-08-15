@@ -68,3 +68,19 @@ resource "aws_autoscaling_attachment" "web-atg-tg-att" {
   autoscaling_group_name = aws_autoscaling_group.web-asg.id
   lb_target_group_arn    = aws_lb_target_group.web-tg.arn
 }
+
+
+# ECS cluster.
+resource "aws_ecs_cluster" "web-cluster" {
+
+  name = "${var.prefix}-cluster"
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
