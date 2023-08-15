@@ -38,6 +38,26 @@ resource "aws_autoscaling_group" "web-asg" {
   }
 }
 
+# Capacity Provider.
+resource "aws_ecs_capacity_provider" "web-capacity-provider" {
+  name = "${var.prefix}-ECSWEB-CaProvider"
+
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = aws_autoscaling_group.web-asg.arn
+    managed_termination_protection = "ENABLED"
+
+    managed_scaling {
+      status          = "ENABLED"
+      target_capacity = 100
+    }
+  }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "cas" {
+  cluster_name       = aws_ecs_cluster.web-cluster.name
+  capacity_providers = [aws_ecs_capacity_provider.web-capacity-provider.name]
+}
+
 resource "aws_lb" "web-lb" {
   name               = "${var.prefix}-lb"
   internal           = false
