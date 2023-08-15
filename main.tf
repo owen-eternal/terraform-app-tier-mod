@@ -32,6 +32,15 @@ data "aws_ami" "amazon_linux_2" {
   owners = ["amazon"]
 }
 
+# ECS container instance association.
+data "template_file" "user_data" {
+  template = file("user_data.sh")
+
+  vars = {
+    ecs_cluster_name = aws_ecs_cluster.web-cluster.name
+  }
+}
+
 ################################################
 ############### Resources ######################
 ################################################
