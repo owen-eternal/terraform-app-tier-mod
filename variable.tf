@@ -8,3 +8,4 @@ variable "web_port" {}
 variable "web_security_group" {}
 variable "web_subnets" {}
 variable "vpc_id" {}
+variable "iam_instance_profile_arn" {}
