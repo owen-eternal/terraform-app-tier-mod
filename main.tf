@@ -198,7 +198,7 @@ resource "aws_ecs_task_definition" "web-task-definition" {
 }
 
 # Cloudwatch log group
-resource "aws_cloudwatch_log_group" "log_group" {
+resource "aws_cloudwatch_log_group" "web-log-group" {
   name              = "/${var.prefix}/ecs/${local.container_name}"
   retention_in_days = 1
 }
