@@ -46,6 +46,7 @@ data "template_file" "user_data" {
 ############### Resources ######################
 ################################################
 
+# Launch template
 resource "aws_launch_template" "capacity-temp" {
   image_id               = var.app_ami
   instance_type          = var.app_instance_type
@@ -63,6 +64,7 @@ resource "aws_launch_template" "capacity-temp" {
   }
 }
 
+# Autoscaling Group
 resource "aws_autoscaling_group" "web-asg" {
   name                  = "${var.prefix}-WEB_ASG"
   min_size            = 0
@@ -108,6 +110,7 @@ resource "aws_ecs_cluster_capacity_providers" "cas" {
   capacity_providers = [aws_ecs_capacity_provider.web-capacity-provider.name]
 }
 
+# Loadbalancer
 resource "aws_lb" "web-lb" {
   name               = "${var.prefix}-lb"
   internal           = false
@@ -116,6 +119,7 @@ resource "aws_lb" "web-lb" {
   subnets            = var.web_subnets
 }
 
+# Listener
 resource "aws_lb_listener" "web-http-listener" {
   load_balancer_arn = aws_lb.web-lb.arn
   port              = local.http_port
@@ -127,6 +131,7 @@ resource "aws_lb_listener" "web-http-listener" {
   }
 }
 
+# Target group
 resource "aws_lb_target_group" "web-tg" {
   name     = "${var.prefix}-tg"
   port     = local.http_port
