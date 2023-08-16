@@ -153,3 +153,25 @@ resource "aws_ecs_cluster" "web-cluster" {
     create_before_destroy = true
   }
 }
+
+# Task Definition.
+resource "aws_ecs_task_definition" "web-task-definition" {
+  family             = "${var.prefix}_ECSWEB_TD"
+  execution_role_arn = var.task_exec_role
+  container_definitions = jsonencode([
+    {
+      name      = "nginx-web-container"
+      image     = var.container_image
+      cpu       = 128
+      memory    = 256
+      essential = true
+      portMappings = [
+        {
+          containerPort = local.http_port
+          hostPort      = local.http_port
+          protocol      = "tcp"
+        }
+      ]
+    }
+  ])
+}
