@@ -74,6 +74,17 @@ resource "aws_autoscaling_group" "web-asg" {
   protect_from_scale_in = true
   vpc_zone_identifier = var.web_subnets
 
+  enabled_metrics = [
+    "GroupMinSize",
+    "GroupMaxSize",
+    "GroupDesiredCapacity",
+    "GroupInServiceInstances",
+    "GroupPendingInstances",
+    "GroupStandbyInstances",
+    "GroupTerminatingInstances",
+    "GroupTotalInstances"
+  ]
+
   launch_template {
     id      = aws_launch_template.capacity-temp.id
     version = "$Default"
