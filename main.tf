@@ -152,13 +152,8 @@ resource "aws_lb_target_group" "web-tg" {
   port     = local.http_port
   protocol = "HTTP"
   vpc_id   = var.vpc_id
+  depends_on = [aws_alb.web-lb]
 }
-
-# resource "aws_autoscaling_attachment" "web-atg-tg-att" {
-#   autoscaling_group_name = aws_autoscaling_group.web-asg.id
-#   lb_target_group_arn    = aws_lb_target_group.web-tg.arn
-# }
-
 
 # ECS cluster.
 resource "aws_ecs_cluster" "web-cluster" {
