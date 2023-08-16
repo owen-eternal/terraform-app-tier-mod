@@ -90,6 +90,10 @@ resource "aws_autoscaling_group" "web-asg" {
     version = "$Default"
   }
 
+  instance_refresh {
+    strategy = "Rolling"
+  }
+
   lifecycle {
     ignore_changes = [desired_capacity]
   }
