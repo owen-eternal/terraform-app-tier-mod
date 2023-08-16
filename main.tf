@@ -4,6 +4,7 @@
 
 locals {
   http_port = var.web_port
+  container_name = "nginx-reverse-proxy"
 }
 
 ################################################
@@ -133,10 +134,10 @@ resource "aws_lb_target_group" "web-tg" {
   vpc_id   = var.vpc_id
 }
 
-resource "aws_autoscaling_attachment" "web-atg-tg-att" {
-  autoscaling_group_name = aws_autoscaling_group.web-asg.id
-  lb_target_group_arn    = aws_lb_target_group.web-tg.arn
-}
+# resource "aws_autoscaling_attachment" "web-atg-tg-att" {
+#   autoscaling_group_name = aws_autoscaling_group.web-asg.id
+#   lb_target_group_arn    = aws_lb_target_group.web-tg.arn
+# }
 
 
 # ECS cluster.
@@ -160,7 +161,7 @@ resource "aws_ecs_task_definition" "web-task-definition" {
   execution_role_arn = var.task_exec_role
   container_definitions = jsonencode([
     {
-      name      = "nginx-web-container"
+      name      = local.container_name
       image     = var.container_image
       cpu       = 128
       memory    = 256
@@ -174,4 +175,36 @@ resource "aws_ecs_task_definition" "web-task-definition" {
       ]
     }
   ])
+}
+
+#ECS service
+resource "aws_ecs_service" "web-service" {
+  name                               = "${var.prefix}_ECSWEB_service"
+  cluster                            = aws_ecs_cluster.web-cluster.id
+  task_definition                    = aws_ecs_task_definition.web-task-definition.arn
+  desired_count                      = 2
+
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.web-tg.arn
+    container_name   = local.container_name
+    container_port   = local.http_port
+  }
+
+  capacity_provider_strategy {
+    base    = 0
+    weight  = 1
+    capacity_provider = aws_ecs_capacity_provider.web-capacity-provider.name
+  }
+
+  ordered_placement_strategy {
+    type  = "spread"
+    field = "attribute:ecs.availability-zone"
+  }
+
+  lifecycle {
+    ignore_changes = [desired_count] 
+  }
 }
