@@ -11,3 +11,4 @@ variable "vpc_id" {}
 variable "iam_instance_profile_arn" {}
 variable "task_exec_role" {}
 variable "container_image" {}
+variable "region" {}

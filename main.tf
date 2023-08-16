@@ -74,9 +74,24 @@ resource "aws_autoscaling_group" "web-asg" {
   protect_from_scale_in = true
   vpc_zone_identifier = var.web_subnets
 
+  enabled_metrics = [
+    "GroupMinSize",
+    "GroupMaxSize",
+    "GroupDesiredCapacity",
+    "GroupInServiceInstances",
+    "GroupPendingInstances",
+    "GroupStandbyInstances",
+    "GroupTerminatingInstances",
+    "GroupTotalInstances"
+  ]
+
   launch_template {
     id      = aws_launch_template.capacity-temp.id
     version = "$Default"
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
   }
 
   lifecycle {
@@ -137,13 +152,8 @@ resource "aws_lb_target_group" "web-tg" {
   port     = local.http_port
   protocol = "HTTP"
   vpc_id   = var.vpc_id
+  depends_on = [aws_alb.web-lb]
 }
-
-# resource "aws_autoscaling_attachment" "web-atg-tg-att" {
-#   autoscaling_group_name = aws_autoscaling_group.web-asg.id
-#   lb_target_group_arn    = aws_lb_target_group.web-tg.arn
-# }
-
 
 # ECS cluster.
 resource "aws_ecs_cluster" "web-cluster" {
@@ -178,8 +188,22 @@ resource "aws_ecs_task_definition" "web-task-definition" {
           protocol      = "tcp"
         }
       ]
+      logConfiguration = {
+        logDriver = "awslogs",
+        options   = {
+          "awslogs-group"         = aws_cloudwatch_log_group.web-log-group.name,
+          "awslogs-region"        = var.region,
+          "awslogs-stream-prefix" = "web"
+        }
+      }
     }
   ])
+}
+
+# Cloudwatch log group
+resource "aws_cloudwatch_log_group" "web-log-group" {
+  name              = "/${var.prefix}/ecs/${local.container_name}"
+  retention_in_days = 1
 }
 
 #ECS service
