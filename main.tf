@@ -161,7 +161,7 @@ resource "aws_ecs_task_definition" "web-task-definition" {
   container_definitions = jsonencode([
     {
       name      = "nginx-web-container"
-      image     = var.image
+      image     = var.container_image
       cpu       = 128
       memory    = 256
       essential = true
